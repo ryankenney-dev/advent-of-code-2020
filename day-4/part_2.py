@@ -1,5 +1,4 @@
 import re
-import sys
 
 required_fields = ('byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid')
 
@@ -48,38 +47,40 @@ def passport_fields_are_valid(passport):
         return False
     return True
 
-message = None
-with open(sys.argv[1], 'r') as f:
-    messages = f.read().split('\n\n')
+def read_file_to_messages(file_path):
+    with open(file_path, 'r') as f:
+        return f.read().split('\n\n')
 
-total_passport_count = 0
-valid_passport_count = 0
-empty_entry_count = 0
-for message in messages:
-    #print("Message : %s" % message)
-    passport = {}
-    for entry in re.split(r'\s+', message):
-        #print("Entry : '%s'" % entry)
-        if entry == '':
-            # No idea why I'm getting an empty string at the end
-            print('Empty entry!')
-            empty_entry_count = empty_entry_count + 1
-            continue
+def process_messages(messages):
+    total_passport_count = 0
+    valid_passport_count = 0
+    empty_entry_count = 0
+    for message in messages:
+        #print("Message : %s" % message)
+        passport = {}
+        for entry in re.split(r'\s+', message):
+            #print("Entry : '%s'" % entry)
+            if entry == '':
+                # No idea why I'm getting an empty string at the end
+                print('Empty entry!')
+                empty_entry_count = empty_entry_count + 1
+                continue
+            match = re.match(r'^(\w\w\w):(.+)$', entry)
+            passport[match.group(1)] = match.group(2)
+    
+        valid_passport = False
+        if passport_has_required_fields(passport):
+            if passport_fields_are_valid(passport):
+                valid_passport = True
+    
+        if valid_passport:
+            valid_passport_count = valid_passport_count + 1
+        total_passport_count = total_passport_count + 1
+        print("[valid=%s] %s" % (valid_passport, passport))
 
-        match = re.match(r'^(\w\w\w):(.+)$', entry)
-        passport[match.group(1)] = match.group(2)
+    return {
+            'valid_count': valid_passport_count,
+            'invalid_count': total_passport_count - valid_passport_count,
+            'empty_entry_count': empty_entry_count
+        }
 
-    valid_passport = False
-    if passport_has_required_fields(passport):
-        if passport_fields_are_valid(passport):
-            valid_passport = True
-
-    if valid_passport:
-        valid_passport_count = valid_passport_count + 1
-    total_passport_count = total_passport_count + 1
-    print("[valid=%s] %s" % (valid_passport, passport))
-
-print("----")
-print("Invalid count: %s" % (total_passport_count - valid_passport_count))
-print("Valid count: %s" % valid_passport_count)
-print("Empty entry count: %s" % empty_entry_count)
