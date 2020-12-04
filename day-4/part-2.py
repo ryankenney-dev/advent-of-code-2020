@@ -18,7 +18,7 @@ def year_field_is_valid(value, min_year, max_year):
     return True
 
 def passport_fields_are_valid(passport):
-    if not year_field_is_valid(passport['byr'], 1980, 2002):
+    if not year_field_is_valid(passport['byr'], 1920, 2002):
         return False
     if not year_field_is_valid(passport['iyr'], 2010, 2020):
         return False
