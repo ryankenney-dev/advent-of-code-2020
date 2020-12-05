@@ -23,14 +23,14 @@ def find_my_seat(location_codes):
     occupied_seats = [False] * 1024
     for location_code in location_codes:
         occupied_seats[get_seat_id(location_code)] = True
-    current = None
-    prev_1 = None
-    prev_2 = None
+    current_occupied = None
+    prev_1_occupied = None
+    prev_2_occupied = None
     for i in range(0,len(occupied_seats)):
-        current = occupied_seats[i]
-        if current == True and prev_1 == False and prev_2 == True:
-            print('FOUND: %s' % i)
+        current_occupied = occupied_seats[i]
+        if current_occupied == True and prev_1_occupied == False and prev_2_occupied == True:
+            print('FOUND: %s' % (i-1))
             #return prev_1
-        prev_2 = prev_1
-        prev_1 = current
+        prev_2_occupied = prev_1_occupied
+        prev_1_occupied = current_occupied
 
