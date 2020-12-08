@@ -34,5 +34,5 @@ def execute_and_return_accumulator_on_loop(program):
 			line_offset = 1
 		else:
 			raise Exception('Unrecognized instruction')
-		line = (line + line_offset) % len(program)
+		line = line + line_offset
 	return accumulator
