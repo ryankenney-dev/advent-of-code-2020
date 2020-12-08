@@ -11,103 +11,76 @@ dark olive bags contain 3 faded blue bags, 4 dotted black bags.
 vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
 dotted black bags contain no other bags.''',
-	'expected_dependencies': [
-		{
-			'color': 'light red',
-			'contains': [
-				{
-					'count': '1',
-					'color': 'bright white'
-				},
-				{
-					'count': '2',
-					'color': 'muted yellow'
-				}
-			]
-		},
-		{
-			'color': 'dark orange',
-			'contains': [
-				{
-					'count': '3',
-					'color': 'bright white'
-				},
-				{
-					'count': '4',
-					'color': 'muted yellow'
-				}
-			]
-		},
-		{
-			'color': 'bright white',
-			'contains': [
-				{
-					'count': '1',
-					'color': 'shiny gold'
-				}
-			]
-		},
-		{
-			'color': 'muted yellow',
-			'contains': [
-				{
-					'count': '2',
-					'color': 'shiny gold'
-				},
-				{
-					'count': '9',
-					'color': 'faded blue'
-				}
-			]
-		},
-		{
-			'color': 'shiny gold',
-			'contains': [
-				{
-					'count': '1',
-					'color': 'dark olive'
-				},
-				{
-					'count': '2',
-					'color': 'vibrant plum'
-				}
-			]
-		},
-		{
-			'color': 'dark olive',
-			'contains': [
-				{
-					'count': '3',
-					'color': 'faded blue'
-				},
-				{
-					'count': '4',
-					'color': 'dotted black'
-				}
-			]
-		},
-		{
-			'color': 'vibrant plum',
-			'contains': [
-				{
-					'count': '5',
-					'color': 'faded blue'
-				},
-				{
-					'count': '6',
-					'color': 'dotted black'
-				}
-			]
-		},
-		{
-			'color': 'faded blue',
-			'contains': []
-		},
-		{
-			'color': 'dotted black',
-			'contains': []
-		}
-	]
+	'expected_dependencies': {
+		'light red': [
+			{
+				'count': '1',
+				'color': 'bright white'
+			},
+			{
+				'count': '2',
+				'color': 'muted yellow'
+			}
+		],
+		'dark orange': [
+			{
+				'count': '3',
+				'color': 'bright white'
+			},
+			{
+				'count': '4',
+				'color': 'muted yellow'
+			}
+		],
+		'bright white': [
+			{
+				'count': '1',
+				'color': 'shiny gold'
+			}
+		],
+		'muted yellow': [
+			{
+				'count': '2',
+				'color': 'shiny gold'
+			},
+			{
+				'count': '9',
+				'color': 'faded blue'
+			}
+		],
+		'shiny gold': [
+			{
+				'count': '1',
+				'color': 'dark olive'
+			},
+			{
+				'count': '2',
+				'color': 'vibrant plum'
+			}
+		],
+		'dark olive': [
+			{
+				'count': '3',
+				'color': 'faded blue'
+			},
+			{
+				'count': '4',
+				'color': 'dotted black'
+			}
+		],
+		'vibrant plum': [
+			{
+				'count': '5',
+				'color': 'faded blue'
+			},
+			{
+				'count': '6',
+				'color': 'dotted black'
+			}
+		],
+		'faded blue': [],
+		'dotted black': []
+	}
 }]
 
 for test_case in test_cases:

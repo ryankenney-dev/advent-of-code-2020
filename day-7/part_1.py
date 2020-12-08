@@ -29,9 +29,8 @@ def parse_line_to_dependencies(line):
 	}
 
 def parse_message_to_dependencies(message):
-	result = []
+	index = {}
 	for line in message.splitlines():
-		result.append(parse_line_to_dependencies(line))
-	return result
-
-
+		parsed = parse_line_to_dependencies(line)
+		index[parsed['color']] = parsed['contains']
+	return index
