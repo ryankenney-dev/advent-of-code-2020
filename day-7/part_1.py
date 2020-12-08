@@ -4,7 +4,7 @@ bag_pattern = '(\\w+ \\w+) bags?'
 line_pattern_no_other_bags = regex.compile('^%s contain no other bags.$' % bag_pattern)
 line_pattern_other_bags = regex.compile('^%s contain(,? (\\d+) %s)+\\.$' % (bag_pattern, bag_pattern))
 
-def parse_line_to_dependencies(line):
+def parse_line(line):
 	match = line_pattern_no_other_bags.match(line)
 	if match:
 		return {
@@ -28,9 +28,27 @@ def parse_line_to_dependencies(line):
 		'contains': inner_bags
 	}
 
-def parse_message_to_dependencies(message):
+def parse_message_to_contained_by_index(message):
 	index = {}
 	for line in message.splitlines():
-		parsed = parse_line_to_dependencies(line)
-		index[parsed['color']] = parsed['contains']
+		parsed = parse_line(line)
+		outer_bag = parsed['color']
+		for inner_bag in parsed['contains']:
+			inner_bag_color = inner_bag['color']
+			if inner_bag_color not in index:
+				index[inner_bag_color] = set()
+			index[inner_bag_color].add(outer_bag)
 	return index
+
+def find_all_possible_containers(color, dependencies_index):
+	collected_containers = set();
+	find_all_possible_containers_inner(color, dependencies_index, collected_containers)
+	return collected_containers
+
+def find_all_possible_containers_inner(color, dependencies_index, collected_containers):
+	if color not in dependencies_index.keys():
+		return
+	containers = dependencies_index[color]
+	for container in containers:
+		collected_containers.add(container)
+		find_all_possible_containers_inner(container, dependencies_index, collected_containers)

@@ -11,82 +11,32 @@ dark olive bags contain 3 faded blue bags, 4 dotted black bags.
 vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
 dotted black bags contain no other bags.''',
-	'expected_dependencies': {
-		'light red': [
-			{
-				'count': '1',
-				'color': 'bright white'
-			},
-			{
-				'count': '2',
-				'color': 'muted yellow'
-			}
-		],
-		'dark orange': [
-			{
-				'count': '3',
-				'color': 'bright white'
-			},
-			{
-				'count': '4',
-				'color': 'muted yellow'
-			}
-		],
-		'bright white': [
-			{
-				'count': '1',
-				'color': 'shiny gold'
-			}
-		],
-		'muted yellow': [
-			{
-				'count': '2',
-				'color': 'shiny gold'
-			},
-			{
-				'count': '9',
-				'color': 'faded blue'
-			}
-		],
-		'shiny gold': [
-			{
-				'count': '1',
-				'color': 'dark olive'
-			},
-			{
-				'count': '2',
-				'color': 'vibrant plum'
-			}
-		],
-		'dark olive': [
-			{
-				'count': '3',
-				'color': 'faded blue'
-			},
-			{
-				'count': '4',
-				'color': 'dotted black'
-			}
-		],
-		'vibrant plum': [
-			{
-				'count': '5',
-				'color': 'faded blue'
-			},
-			{
-				'count': '6',
-				'color': 'dotted black'
-			}
-		],
-		'faded blue': [],
-		'dotted black': []
+	'expected_contained_by_index': {
+		'bright white': {'dark orange', 'light red'},
+		'muted yellow': {'dark orange', 'light red'},
+		'shiny gold': {'bright white', 'muted yellow'},
+		'faded blue': {'dark olive', 'muted yellow', 'vibrant plum'},
+		'dark olive': {'shiny gold'},
+		'vibrant plum': {'shiny gold'},
+		'dotted black': {'dark olive', 'vibrant plum'}
+	},
+	'bag_to_carry': 'shiny gold',
+	'expected_possible_containers': {
+		'bright white',
+		'muted yellow',
+		'dark orange',
+		'light red'
 	}
 }]
 
 for test_case in test_cases:
-	#print(json.dumps(part_1.parse_message_to_dependencies(test_case['input']), indent=4))
-	dependencies = part_1.parse_message_to_dependencies(test_case['input'])
-	if dependencies != test_case['expected_dependencies']:
+	dependencies = part_1.parse_message_to_contained_by_index(test_case['input'])
+	#print(dependencies)
+	if dependencies != test_case['expected_contained_by_index']:
+		raise Exception('Unexpected')
+	possible_containers = part_1.find_all_possible_containers(test_case['bag_to_carry'], dependencies)
+	print(possible_containers)
+	if possible_containers != test_case['expected_possible_containers']:
 		raise Exception('Unexpected')
 
 print("")
