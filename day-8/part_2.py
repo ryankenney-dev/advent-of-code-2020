@@ -43,6 +43,7 @@ def execute_and_return_accumulator(program):
 	line = 0
 	lines_hit = set()
 	while line < len(program) and line not in lines_hit:
+		print("LINE: %s" % line)
 		lines_hit.add(line)
 		instruction = program[line]
 		print (instruction)
@@ -71,11 +72,10 @@ def find_op_toggle_line_that_prevents_loop(program):
 	raise Exception('No solution found')
 
 def create_toggled_prog(program, line_number):
-	line = program[line_number]
 	program_copy = copy.deepcopy(program)
-	if line['operation'] == 'jmp':
+	if program_copy[line_number]['operation'] == 'jmp':
 		program_copy[line_number]['operation'] = 'nop'
-	elif line['operation'] == 'nop':
+	elif program_copy[line_number]['operation'] == 'nop':
 		program_copy[line_number]['operation'] = 'jmp'
 	else:
 		raise Exception('Invalid op to toggle')
