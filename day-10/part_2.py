@@ -43,7 +43,7 @@ def count_all_combinations_inner(jolt_adapters, current_index, solutions_cache):
         nested_adapter = jolt_adapters[i]
         if nested_adapter - current_adapter > 3:
             break
-        # NOTE: The solutions_cache containers solutions for subtress that
+        # NOTE: The solutions_cache container solutions for subtress that
         # have already been visited
         if str(nested_adapter) in solutions_cache:
             nested_count = solutions_cache[str(nested_adapter)]
