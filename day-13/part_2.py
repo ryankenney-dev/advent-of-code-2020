@@ -21,17 +21,32 @@ WaitEntry = namedtuple('WaitEntry', ['bus', 'wait_time'])
 # Assumes buses sorted largest to smallest interval (for performance)
 def find_time_with_bus_offsets(buses):
     initial_bus_multiplier = 1
+
+    # TODO: Remove debug
+    # found_count = 0
+
     while True:
         timestamp = buses[0].interval * initial_bus_multiplier - buses[0].offset
         found = True
         for i in range(1, len(buses)):
             bus = buses[i]
-            if (timestamp + bus.offset) % bus.interval != 0:
+            if not bus_aligns_with_timestamp(bus, timestamp):
                 found = False
                 break
+
+        # TODO: Remove debug
+        # if found:
+        #     found_count += 1
+        #     if found_count > 1:
+        #         return timestamp
+
         if found:
             return timestamp
         initial_bus_multiplier += 1
+
+
+def bus_aligns_with_timestamp(bus, timestamp):
+    return (timestamp + bus.offset) % bus.interval == 0
 
 def find_bus_with_minimum_wait(notes):
     min_wait = notes.earliest_time
