@@ -18,7 +18,7 @@ def parse_to_buses_sorted_by_interval(message):
 
 WaitEntry = namedtuple('WaitEntry', ['bus', 'wait_time'])
 
-# Assumes buses sorted larges to smalles interval (for performance)
+# Assumes buses sorted largest to smallest interval (for performance)
 def find_time_with_bus_offsets(buses):
     initial_bus_multiplier = 1
     while True:
