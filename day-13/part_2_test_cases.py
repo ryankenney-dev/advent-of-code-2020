@@ -27,13 +27,9 @@ test_cases = [{
 }]
 
 for test_case in test_cases:
-    buses = part_2.parse_to_buses_sorted_by_interval(test_case['input'])
+    buses = part_2.parse_to_buses(test_case['input'])
     print(buses)
     timestamp = part_2.find_time_with_bus_offsets(buses)
-
-    # TODO: Remove debug
-    # print('%s %s %s' % (test_case['expected_timestamp'], timestamp, timestamp /test_case['expected_timestamp']))
-
     if timestamp != test_case['expected_timestamp']:
         raise Exception('Expected %s but saw %s' % (test_case['expected_timestamp'], timestamp))
 

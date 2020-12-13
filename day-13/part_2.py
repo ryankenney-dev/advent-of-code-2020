@@ -4,7 +4,7 @@ Notes = namedtuple('Notes', ['earliest_time', 'buses'])
 
 Bus = namedtuple('Bus', ['interval', 'offset'])
 
-def parse_to_buses_sorted_by_interval(message):
+def parse_to_buses(message):
     lines = message.splitlines()
 
     buses = []
@@ -13,55 +13,46 @@ def parse_to_buses_sorted_by_interval(message):
         if bus != 'x':
             buses.append(Bus(int(bus), bus_index))
         bus_index += 1
-    buses.sort(key=lambda x: x.interval, reverse=True)
     return buses
 
 WaitEntry = namedtuple('WaitEntry', ['bus', 'wait_time'])
 
-# Assumes buses sorted largest to smallest interval (for performance)
+# Theory of solution:
+#
+# * First walk in increments of the first bus' interval
+#   to find a solution for the first two buses
+# * After finding a solution for the first pair, continuing
+#   walking increments of the first bus to find a second
+#   solution to the pair of buses. The difference between these
+#   solutions is the same of all futher solutions for these
+#   two buses.
+# * Repeat the process for each successive bus, using the previously
+#   calculated difference between two solutions as the incrementor.
+#
 def find_time_with_bus_offsets(buses):
-    initial_bus_multiplier = 1
+    # Sort buses by offset
+    buses = buses.copy()
+    buses.sort(key=lambda x: x.offset)
 
-    # TODO: Remove debug
-    # found_count = 0
+    # Jumps between solutions per buses already solved for
+    time_increment = buses[0].interval
+    # The last witnessed solution
+    last_solution_time = 0
 
-    while True:
-        timestamp = buses[0].interval * initial_bus_multiplier - buses[0].offset
-        found = True
-        for i in range(1, len(buses)):
-            bus = buses[i]
-            if not bus_aligns_with_timestamp(bus, timestamp):
-                found = False
-                break
-
-        # TODO: Remove debug
-        # if found:
-        #     found_count += 1
-        #     if found_count > 1:
-        #         return timestamp
-
-        if found:
-            return timestamp
-        initial_bus_multiplier += 1
-
+    for b in range(1, len(buses)):
+        bus = buses[b]
+        solutions = []
+        time_increment_count = 0
+        while True:
+            timestamp = last_solution_time + time_increment * time_increment_count
+            if bus_aligns_with_timestamp(bus, timestamp):
+                solutions.append(timestamp)
+                if len(solutions) > 1:
+                    time_increment = solutions[1] - solutions[0]
+                    last_solution_time = solutions[0]
+                    break
+            time_increment_count += 1
+    return last_solution_time
 
 def bus_aligns_with_timestamp(bus, timestamp):
     return (timestamp + bus.offset) % bus.interval == 0
-
-def find_bus_with_minimum_wait(notes):
-    min_wait = notes.earliest_time
-    min_wait_buses = []
-    for bus in notes.buses:
-        wait_time = bus - (notes.earliest_time % bus)
-        if wait_time < min_wait:
-            min_wait = wait_time
-            min_wait_buses = []
-        if wait_time <= min_wait:
-            min_wait_buses.append(WaitEntry(bus, wait_time))
-    if len(min_wait_buses) > 1:
-        raise Exception('More than one solution')
-    return min_wait_buses[0]
-
-def compute_result(notes):
-    wait_entry = find_bus_with_minimum_wait(notes)
-    return wait_entry.wait_time * wait_entry.bus
