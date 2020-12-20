@@ -2,39 +2,69 @@ import part_2
 import re
 
 test_cases = [{
-    'input': '''0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
+    'input': '''42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
 
-ababbb
-bababa
-abbbab
-aaabbb
-aaaabbb''',
-    'expected_rules': {
-        0: {'seq': [4, 1, 5]},
-        1: {'or':[ {'seq':[2, 3]}, {'seq':[3, 2]}]},
-        2: {'or':[ {'seq':[4, 4]}, {'seq':[5, 5]}]},
-        3: {'or':[ {'seq':[4, 5]}, {'seq':[5, 4]}]},
-        4: 'a',
-        5: 'b',
-    },
-    'expected_messages': [
-        'ababbb',
-        'bababa',
-        'abbbab',
-        'aaabbb',
-        'aaaabbb',
-    ],
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba''',
     'expected_test_all_result': [
-        (True, 'ababbb'),
-        (False, 'bababa'),
-        (True, 'abbbab'),
-        (False, 'aaabbb'),
-        (False, 'aaaabbb'),
+        (False, 'abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa'),
+        (True, 'bbabbbbaabaabba'),
+        (False, 'babbbbaabbbbbabbbbbbaabaaabaaa'),
+        (False, 'aaabbbbbbaaaabaababaabababbabaaabbababababaaa'),
+        (False, 'bbbbbbbaaaabbbbaaabbabaaa'),
+        (False, 'bbbababbbbaaaaaaaabbababaaababaabab'),
+        (True, 'ababaaaaaabaaab'),
+        (True, 'ababaaaaabbbaba'),
+        (False, 'baabbaaaabbaaaababbaababb'),
+        (False, 'abbbbabbbbaaaababbbbbbaaaababb'),
+        (False, 'aaaaabbaabaaaaababaa'),
+        (False, 'aaaabbaaaabbaaa'),
+        (False, 'aaaabbaabbaaaaaaabbbabbbaaabbaabaaa'),
+        (False, 'babaaabbbaaabaababbaabababaaab'),
+        (False, 'aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba'),
     ]
 }]
 
@@ -45,9 +75,6 @@ def assert_equals(actual_value, expected_value):
 for test_case in test_cases:
 
     parsed = part_2.parse_input(test_case['input'])
-    assert_equals(parsed['rules'], test_case['expected_rules'])
-    assert_equals(parsed['messages'], test_case['expected_messages'])
-
     result = part_2.test_all_messages(test_case['input'])
     assert_equals(result, test_case['expected_test_all_result'])
 
