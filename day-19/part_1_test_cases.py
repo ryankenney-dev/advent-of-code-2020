@@ -29,7 +29,6 @@ aaaabbb''',
         'aaabbb',
         'aaaabbb',
     ],
-    'expected_regex': r'^a((aa|bb)(ab|ba)|(ab|ba)(aa|bb))b$',
     'expected_test_all_result': [
         (True, 'ababbb'),
         (False, 'bababa'),
@@ -48,9 +47,6 @@ for test_case in test_cases:
     parsed = part_1.parse_input(test_case['input'])
     assert_equals(parsed['rules'], test_case['expected_rules'])
     assert_equals(parsed['messages'], test_case['expected_messages'])
-
-    regex = part_1.to_regex(parsed['rules'])
-    assert_equals(regex, test_case['expected_regex'])
 
     result = part_1.test_all_messages(test_case['input'])
     assert_equals(result, test_case['expected_test_all_result'])
