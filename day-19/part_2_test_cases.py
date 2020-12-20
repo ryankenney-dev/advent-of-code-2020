@@ -6,7 +6,7 @@ test_cases = [{
 9: 14 27 | 1 26
 10: 23 14 | 28 1
 1: "a"
-11: 42 31
+11: 42 31 | 42 11 31
 5: 1 14 | 15 1
 19: 14 1 | 14 14
 12: 24 14 | 19 1
@@ -28,7 +28,7 @@ test_cases = [{
 21: 14 1 | 1 14
 25: 1 1 | 1 14
 22: 14 14
-8: 42
+8: 42 | 42 8
 26: 14 22 | 1 20
 18: 15 15
 7: 14 5 | 1 21
@@ -52,19 +52,19 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba''',
     'expected_test_all_result': [
         (False, 'abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa'),
         (True, 'bbabbbbaabaabba'),
-        (False, 'babbbbaabbbbbabbbbbbaabaaabaaa'),
-        (False, 'aaabbbbbbaaaabaababaabababbabaaabbababababaaa'),
-        (False, 'bbbbbbbaaaabbbbaaabbabaaa'),
-        (False, 'bbbababbbbaaaaaaaabbababaaababaabab'),
+        (True, 'babbbbaabbbbbabbbbbbaabaaabaaa'),
+        (True, 'aaabbbbbbaaaabaababaabababbabaaabbababababaaa'),
+        (True, 'bbbbbbbaaaabbbbaaabbabaaa'),
+        (True, 'bbbababbbbaaaaaaaabbababaaababaabab'),
         (True, 'ababaaaaaabaaab'),
         (True, 'ababaaaaabbbaba'),
-        (False, 'baabbaaaabbaaaababbaababb'),
-        (False, 'abbbbabbbbaaaababbbbbbaaaababb'),
-        (False, 'aaaaabbaabaaaaababaa'),
+        (True, 'baabbaaaabbaaaababbaababb'),
+        (True, 'abbbbabbbbaaaababbbbbbaaaababb'),
+        (True, 'aaaaabbaabaaaaababaa'),
         (False, 'aaaabbaaaabbaaa'),
-        (False, 'aaaabbaabbaaaaaaabbbabbbaaabbaabaaa'),
+        (True, 'aaaabbaabbaaaaaaabbbabbbaaabbaabaaa'),
         (False, 'babaaabbbaaabaababbaabababaaab'),
-        (False, 'aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba'),
+        (True, 'aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba'),
     ]
 }]
 
