@@ -109,6 +109,16 @@ Tile 3079:
 ..#.###...
 ..#.......
 ..#.###...''',
+    'expected_to_string': '''..##.#..#.
+#        .
+#        .
+#        #
+#        .
+#        #
+.        #
+.        .
+#        .
+..###..###''',
     'expected_edges': [
         ( part_1.EDGE_NORTH, '..##.#..#.' ),
         ( part_1.EDGE_EAST, '...#.##..#' ),
@@ -128,14 +138,24 @@ Tile 3079:
         ( part_1.EDGE_WEST, '#..##.#...' ),
     ],
     'expected_west_edge_indexes': [
-        ( '.#..#####.', ( 2311, {'rotate': 0} ) ),
-        ( '###..###..', ( 2311, {'rotate': 1} ) ),
-        ( '...#.##..#', ( 2311, {'rotate': 2} ) ),
-        ( '..##.#..#.', ( 2311, {'rotate': 3} ) ),
-        ( '#..##.#...', ( 2311, {'flip': 1, 'rotate': 0} ) ),
-        ( '..###..###', ( 2311, {'flip': 1, 'rotate': 1} ) ),
-        ( '.#####..#.', ( 2311, {'flip': 1, 'rotate': 2} ) ),
-        ( '.#..#.##..', ( 2311, {'flip': 1, 'rotate': 3} ) ),
+        ( '.#..#####.', part_1.TileOrientation( tile_id=2311, translation_id=0 ) ),
+        ( '###..###..', part_1.TileOrientation( tile_id=2311, translation_id=1 ) ),
+        ( '...#.##..#', part_1.TileOrientation( tile_id=2311, translation_id=2 ) ),
+        ( '..##.#..#.', part_1.TileOrientation( tile_id=2311, translation_id=3 ) ),
+        ( '#..##.#...', part_1.TileOrientation( tile_id=2311, translation_id=4 ) ),
+        ( '..###..###', part_1.TileOrientation( tile_id=2311, translation_id=5 ) ),
+        ( '.#####..#.', part_1.TileOrientation( tile_id=2311, translation_id=6 ) ),
+        ( '.#..#.##..', part_1.TileOrientation( tile_id=2311, translation_id=7 ) ),
+    ],
+    'expected_north_edge_indexes': [
+        ( '..##.#..#.', part_1.TileOrientation( tile_id=2311, translation_id=0 ) ),
+        ( '.#..#####.', part_1.TileOrientation( tile_id=2311, translation_id=1 ) ),
+        ( '###..###..', part_1.TileOrientation( tile_id=2311, translation_id=2 ) ),
+        ( '...#.##..#', part_1.TileOrientation( tile_id=2311, translation_id=3 ) ),
+        ( '.#..#.##..', part_1.TileOrientation( tile_id=2311, translation_id=4 ) ),
+        ( '#..##.#...', part_1.TileOrientation( tile_id=2311, translation_id=5 ) ),
+        ( '..###..###', part_1.TileOrientation( tile_id=2311, translation_id=6 ) ),
+        ( '.#####..#.', part_1.TileOrientation( tile_id=2311, translation_id=7 ) ),
     ],
 }]
 
@@ -147,30 +167,60 @@ for test_case in test_cases:
 
     tiles = part_1.parse_input(test_case['input'])
     for expected_edge in test_case['expected_edges']:
-        assert_equals(tiles[0].get_edge(expected_edge[0]), expected_edge[1])
+        assert_equals(part_1.tile_get_edge(tiles[0], expected_edge[0]), expected_edge[1])
+
+    # Test tile_to_string()
+    s = part_1.tile_to_string(tiles[0])
+    assert_equals(s, test_case['expected_to_string'])
 
     # Test rotate()
-    rotated = tiles[0].translate({'rotate': 1})
+    rotated = part_1.tile_translate(tiles[0], part_1.Translation(rotate=1))
     for expected_edge in test_case['expected_edges_after_rotate']:
-        assert_equals(rotated.get_edge(expected_edge[0]), expected_edge[1])
+        assert_equals(part_1.tile_get_edge(rotated, expected_edge[0]), expected_edge[1])
     # ... verifying the original tile not changed
     for expected_edge in test_case['expected_edges']:
-        assert_equals(tiles[0].get_edge(expected_edge[0]), expected_edge[1])
+        assert_equals(part_1.tile_get_edge(tiles[0], expected_edge[0]), expected_edge[1])
 
     # Test flip()
-    flipped = tiles[0].translate({'flip': 1})
+    flipped = part_1.tile_translate(tiles[0], part_1.Translation(flip=1))
     for expected_edge in test_case['expected_edges_after_flip']:
-        assert_equals(flipped.get_edge(expected_edge[0]), expected_edge[1])
+        assert_equals(part_1.tile_get_edge(flipped, expected_edge[0]), expected_edge[1])
     # ... verifying the original tile not changed
     for expected_edge in test_case['expected_edges']:
-        assert_equals(tiles[0].get_edge(expected_edge[0]), expected_edge[1])
+        assert_equals(part_1.tile_get_edge(tiles[0], expected_edge[0]), expected_edge[1])
 
-    west_tile_edges = part_1.index_all_west_tile_edges(tiles)
-    for expected_index_entry in test_case['expected_west_edge_indexes']:
-        if expected_index_entry[0] not in west_tile_edges:
+    # Test generate_indexes()
+    indexes = part_1.generate_indexes(tiles)
+    # ... Verifying north edges
+    tile_edges = indexes.edge_indexes[part_1.EDGE_NORTH]
+    for expected_index_entry in test_case['expected_north_edge_indexes']:
+        if expected_index_entry[0] not in tile_edges:
             raise Exception('Missing expected entry: %s' % expected_index_entry[0])
-        if expected_index_entry[1] not in west_tile_edges[expected_index_entry[0]]:
+        if expected_index_entry[1] not in tile_edges[expected_index_entry[0]]:
             raise Exception('Missing expected entry in %s: %s' % (expected_index_entry[0], expected_index_entry[1]))
+    # ... Verifying west edges
+    tile_edges = indexes.edge_indexes[part_1.EDGE_WEST]
+    for expected_index_entry in test_case['expected_west_edge_indexes']:
+        if expected_index_entry[0] not in tile_edges:
+            raise Exception('Missing expected entry: %s' % expected_index_entry[0])
+        if expected_index_entry[1] not in tile_edges[expected_index_entry[0]]:
+            raise Exception('Missing expected entry in %s: %s' % (expected_index_entry[0], expected_index_entry[1]))
+    # ... Verifying all_tile_orientations
+    assert_equals(len(indexes.all_tile_orientations), len(part_1.STANDARD_TRANSLATIONS) * len(tiles))
+
+    part_1.find_solution(tiles)
+
+    # Test get_next_square()
+    example_matrix = [[0]*2 for i in range(2)]
+    next = part_1.SquareLocation(x=0,y=0)
+    next = part_1.get_next_square(next,example_matrix)
+    assert_equals(next, part_1.SquareLocation(x=1,y=0))
+    next = part_1.get_next_square(next,example_matrix)
+    assert_equals(next, part_1.SquareLocation(x=0,y=1))
+    next = part_1.get_next_square(next,example_matrix)
+    assert_equals(next, part_1.SquareLocation(x=1,y=1))
+    next = part_1.get_next_square(next,example_matrix)
+    assert_equals(next, None)
 
 print("")
 print("[[[ SUCCESS ]]]")
