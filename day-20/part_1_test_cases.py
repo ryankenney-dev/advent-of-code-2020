@@ -165,6 +165,7 @@ Tile 3079:
         ( '..###..###', part_1.TileOrientation( tile_id=2311, translation_id=6 ) ),
         ( '.#####..#.', part_1.TileOrientation( tile_id=2311, translation_id=7 ) ),
     ],
+    'expected_corners_product': 20899048083289
 }]
 
 def assert_equals(actual_value, expected_value):
@@ -214,7 +215,8 @@ for test_case in test_cases:
     # ... Verifying all_tile_orientations
     assert_equals(len(indexes.all_tile_orientations), len(part_1.STANDARD_TRANSLATIONS) * len(tiles))
 
-    part_1.find_solution(tiles)
+    corners_product = part_1.find_solution(tiles)
+    assert_equals(corners_product, test_case['expected_corners_product'])
 
     # Test get_next_square()
     example_matrix = [[0]*2 for i in range(2)]

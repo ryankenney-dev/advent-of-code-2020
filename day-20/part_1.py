@@ -124,11 +124,6 @@ def get_next_square(current_square, solution_matrix, offset=1):
 	walking east across items and south across rows.
 	Specify offset=-1 to increment backwards
 	'''
-
-	# TODO: Remvoe debug
-	# print(solution_matrix)
-	# print('type: %s' % type(solution_matrix))
-
 	height = len(solution_matrix)
 	width = len(solution_matrix[0])
 	square_number = current_square.y * height + current_square.x
@@ -151,9 +146,6 @@ def get_compatible_tiles(target_square, solution_matrix, indexes):
 		required_edge = tile_get_edge(adjacent_tile, edge_direction)
 		# Reverse direction of edge to translate from adjacent tile
 		required_edge = required_edge[::-1]
-
-		print('required_edge: %s' % required_edge)
-
 		if required_edge not in indexes.edge_indexes[edge_direction]:
 			return set()
 		return indexes.edge_indexes[edge_direction][required_edge]
@@ -170,29 +162,6 @@ def get_compatible_tiles(target_square, solution_matrix, indexes):
 	else:
 		north_compatible = get_edge_compatible_tiles(EDGE_NORTH, \
 			SquareLocation(target_square.x, target_square.y-1))
-
-	# TODO: Removed debug
-# 	test_tile='''#...##.#..
-# .        #
-# .        .
-# #        .
-# .        #
-# .        #
-# #        #
-# .        #
-# #        #
-# #.##...##.'''
-# 	west_square = SquareLocation(target_square.x-1, target_square.y)
-# 	if target_square.x > 0:
-# 		west_tile = get_current_tile(west_square, solution_matrix, indexes)
-# 		if tile_to_string(west_tile) == test_tile and \
-# 			west_tile.tile_id == 1951 and \
-# 			west_square == SquareLocation(0,0):
-# 			print(tile_to_string(west_tile))
-# 			print('WEST_INDEXES:%s' % indexes.edge_indexes[EDGE_WEST])
-# 			print('WEST C: %s' % west_compatible)
-# 			print('NORTH C: %s' % north_compatible)
-# 			raise Exception('Wait up')
 
 	compatible_tiles = north_compatible.intersection(west_compatible)
 	return filter(lambda t: t.tile_id not in tiles_in_use, compatible_tiles)
@@ -211,79 +180,43 @@ def find_solution(tiles):
 	solution_matrix[0][0] = list(indexes.all_tile_orientations)
 	current_square = SquareLocation(0,0)
 
-
-	# TODO: Remove debug
-	# cycle_limit = 20
-
 	while True:
-
-		# TODO: Remove debug
-		print('')
-		print_matrix_counts(solution_matrix)
-		print('current_square: %s' % str(current_square))
-
-		# TODO: Remove debug
-		# if cycle_limit < 1:
-		# 	break
-		# cycle_limit -= 1
-
 		next_square = get_next_square(current_square, solution_matrix)
 		if next_square == None:
 			# We hit the end of the matrix (we're done)
 			break
 
-		# TODO: Remove debug
-		print('next_square: %s' % str(next_square))
-
 		next_compatible_tiles = list(get_compatible_tiles(next_square, solution_matrix, indexes))
 		solution_matrix[next_square.y][next_square.x] = next_compatible_tiles
 
 		if len(next_compatible_tiles) < 1:
-
-			# TODO: Remove debug
-			print('No Solution Found')
-
 			solution_matrix[current_square.y][current_square.x].pop()
-
-			# TODO: Remove debug
-			print('Walked back')
-
 			# Walk backwards through all exhasted previous squares
 			while len(solution_matrix[current_square.y][current_square.x]) < 1:
 				if current_square == SquareLocation(0,0):
 					# Should not happen
 					raise Exception('No solution found')
-
 				current_square = get_next_square(current_square, solution_matrix, offset=-1)
 				# The top item in this just failed
 				solution_matrix[current_square.y][current_square.x].pop()
 
-				# TODO: Remove debug
-				print('Walked back')
-
 		else:
-
-			# TODO: Remove debug
-			print('Found %s Solutions, added to %s' % (len(next_compatible_tiles), next_square))
-
 			current_square = next_square
 
-	print_matrix_ids(solution_matrix)
+	# Compute product of tile_ids in corners
+	product = 1
+	for r in [0, len(solution_matrix)-1]:
+		row = solution_matrix[r]
+		for i in [0, len(row)-1]:
+			product *= row[i][-1].tile_id
+	return product
 
 def get_current_tile(square, solution_matrix, indexes):
 	'''
-	Returns the tile from the top of the possilbe solutions for the specified square,
+	Returns the tile from the top of the possible solutions for the specified square,
 	with any translation applied.
 	'''
-
 	tile_orientation = solution_matrix[square.y][square.x][-1]
-
-	# TODO: Remove debug
-	print('square: %s' % str(square))
-	print(len(solution_matrix))
-	print(len(solution_matrix[0]))
-	print(STANDARD_TRANSLATIONS[tile_orientation.translation_id])
-
 	return tile_translate( \
 		indexes.id_index[tile_orientation.tile_id], \
 		STANDARD_TRANSLATIONS[tile_orientation.translation_id])
