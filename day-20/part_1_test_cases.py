@@ -125,18 +125,26 @@ Tile 3079:
         ( part_1.EDGE_SOUTH, '###..###..' ),
         ( part_1.EDGE_WEST, '.#..#####.' ),
     ],
-    'expected_edges_after_rotate': [
-        ( part_1.EDGE_NORTH, '.#..#####.' ),
-        ( part_1.EDGE_EAST, '..##.#..#.' ),
-        ( part_1.EDGE_SOUTH, '...#.##..#' ),
-        ( part_1.EDGE_WEST, '###..###..' ),
-    ],
-    'expected_edges_after_flip': [
-        ( part_1.EDGE_NORTH, '.#..#.##..' ),
-        ( part_1.EDGE_EAST, '.#####..#.' ),
-        ( part_1.EDGE_SOUTH, '..###..###' ),
-        ( part_1.EDGE_WEST, '#..##.#...' ),
-    ],
+    'expected_after_rotate': '''.#..#####.
+.        .
+#        #
+#        #
+#        .
+.        #
+.        .
+#        .
+#        #
+#..##.#...''',
+    'expected_after_flip': '''.#..#.##..
+.        #
+.        #
+#        #
+.        #
+#        #
+#        .
+.        .
+.        #
+###..###..''',
     'expected_west_edge_indexes': [
         ( '.#..#####.', part_1.TileOrientation( tile_id=2311, translation_id=0 ) ),
         ( '###..###..', part_1.TileOrientation( tile_id=2311, translation_id=1 ) ),
@@ -175,16 +183,14 @@ for test_case in test_cases:
 
     # Test rotate()
     rotated = part_1.tile_translate(tiles[0], part_1.Translation(rotate=1))
-    for expected_edge in test_case['expected_edges_after_rotate']:
-        assert_equals(part_1.tile_get_edge(rotated, expected_edge[0]), expected_edge[1])
+    assert_equals(part_1.tile_to_string(rotated), test_case['expected_after_rotate'])
     # ... verifying the original tile not changed
     for expected_edge in test_case['expected_edges']:
         assert_equals(part_1.tile_get_edge(tiles[0], expected_edge[0]), expected_edge[1])
 
     # Test flip()
     flipped = part_1.tile_translate(tiles[0], part_1.Translation(flip=1))
-    for expected_edge in test_case['expected_edges_after_flip']:
-        assert_equals(part_1.tile_get_edge(flipped, expected_edge[0]), expected_edge[1])
+    assert_equals(part_1.tile_to_string(flipped), test_case['expected_after_flip'])
     # ... verifying the original tile not changed
     for expected_edge in test_case['expected_edges']:
         assert_equals(part_1.tile_get_edge(tiles[0], expected_edge[0]), expected_edge[1])

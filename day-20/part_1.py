@@ -146,14 +146,14 @@ def get_compatible_tiles(target_square, solution_matrix, indexes):
 		with the existing solution matrix
 		'''
 		adjacent_tile = get_current_tile(adjacent_square, solution_matrix, indexes)
-
-		# TODO: Removed debug
-		if adjacent_tile.tile_id == 1951 and adjacent_square == SquareLocation(1,0) and edge_direction == EDGE_WEST:
-			print(tile_to_string(adjacent_tile))
-			raise Exception('Wait up')
-
+		# Flip 180 to get complimentary edge from the adjacent tile
+		adjacent_tile = tile_translate(adjacent_tile, Translation(rotate=2))
 		required_edge = tile_get_edge(adjacent_tile, edge_direction)
+		# Reverse direction of edge to translate from adjacent tile
 		required_edge = required_edge[::-1]
+
+		print('required_edge: %s' % required_edge)
+
 		if required_edge not in indexes.edge_indexes[edge_direction]:
 			return set()
 		return indexes.edge_indexes[edge_direction][required_edge]
@@ -171,9 +171,28 @@ def get_compatible_tiles(target_square, solution_matrix, indexes):
 		north_compatible = get_edge_compatible_tiles(EDGE_NORTH, \
 			SquareLocation(target_square.x, target_square.y-1))
 
-	# TODO: Remove debug
-	# print('N compat: %s' % str(north_compatible))
-	# print('W compat: %s' % str(west_compatible))
+	# TODO: Removed debug
+# 	test_tile='''#...##.#..
+# .        #
+# .        .
+# #        .
+# .        #
+# .        #
+# #        #
+# .        #
+# #        #
+# #.##...##.'''
+# 	west_square = SquareLocation(target_square.x-1, target_square.y)
+# 	if target_square.x > 0:
+# 		west_tile = get_current_tile(west_square, solution_matrix, indexes)
+# 		if tile_to_string(west_tile) == test_tile and \
+# 			west_tile.tile_id == 1951 and \
+# 			west_square == SquareLocation(0,0):
+# 			print(tile_to_string(west_tile))
+# 			print('WEST_INDEXES:%s' % indexes.edge_indexes[EDGE_WEST])
+# 			print('WEST C: %s' % west_compatible)
+# 			print('NORTH C: %s' % north_compatible)
+# 			raise Exception('Wait up')
 
 	compatible_tiles = north_compatible.intersection(west_compatible)
 	return filter(lambda t: t.tile_id not in tiles_in_use, compatible_tiles)
