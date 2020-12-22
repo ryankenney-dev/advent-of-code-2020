@@ -28,7 +28,7 @@ Player 2:
         28: ([4, 1], [9, 7, 3, 2, 10, 6, 8, 5]),
         29: ([1], [7, 3, 2, 10, 6, 8, 5, 9, 4]),
     },
-    'expected_winning_score': 306
+    'expected_winning_score': 291
 }]
 
 def assert_equals(actual_value, expected_value):
@@ -37,17 +37,18 @@ def assert_equals(actual_value, expected_value):
 
 for test_case in test_cases:
 
-    hands = part_2.parse_input(test_case['input'])
-    assert_equals(hands, test_case['expected_parsed_hands'])
-    round = 1
-    while len(hands[0]) > 1 and len(hands[1]) > 1:
-        round += 1
-        part_2.play_round(hands[0], hands[1])
-        if round in test_case['expected_rounds']:
-            assert_equals(hands[0], test_case['expected_rounds'][round][0])
-            assert_equals(hands[1], test_case['expected_rounds'][round][1])
+    # hands = part_2.parse_input(test_case['input'])
+    # assert_equals(hands, test_case['expected_parsed_hands'])
+    # round = 1
+    # while len(hands[0]) > 1 and len(hands[1]) > 1:
+    #     round += 1
+    #     part_2.play_round(hands[0], hands[1])
+    #     if round in test_case['expected_rounds']:
+    #         assert_equals(hands[0], test_case['expected_rounds'][round][0])
+    #         assert_equals(hands[1], test_case['expected_rounds'][round][1])
     hands = copy.deepcopy(test_case['expected_parsed_hands'])
-    winning_score = part_2.play_whole_game(hands[0], hands[1])
+    winning_hand_id = part_2.play_whole_game(hands)
+    winning_score = part_2.compute_score(hands[winning_hand_id])
     assert_equals(winning_score, test_case['expected_winning_score'])
 
 print("")
