@@ -67,6 +67,73 @@ def tile_translate(tile, translation):
 
 	return tile
 
+def tile_shrink(tile):
+	'''
+	Returns a copy of the Tile, but with the outer edge of
+	pixels removed.
+	'''
+	height = len(tile.pixels)
+	width = len(tile.pixels[0])
+	pixels = solution_matrix = [[[]]*(width-2) for i in range(height-2)]
+	for y in range(1, len(tile.pixels)-1):
+		row = tile.pixels[y]
+		for x in range(1, len(row)-1):
+			pixels[y-1][x-1] = row[x]
+	return Tile(tile_id=tile.tile_id, pixels=pixels)
+
+def tile_find_image(tile, image):
+	image_array = []
+	lines = image.splitlines()
+	for line in lines:
+		image_array.append(list(line)) 
+	matches = []
+	for pixels_y in range(0, len(tile.pixels)):
+		pixels_row = tile.pixels[pixels_y]
+		for pixels_x in range(0, len(pixels_row)):
+			if tile_contains_image_at(tile, image_array, (pixels_x, pixels_y)):
+				matches.append((pixels_x, pixels_y))
+	return matches
+
+def tile_contains_image_at(tile, image_array, corner_coord):
+	for image_y in range(0, len(image_array)):
+		if corner_coord[1]+image_y >= len(tile.pixels):
+			return False
+		image_row = image_array[image_y]
+		for image_x in range(0, len(image_row)):
+			if corner_coord[0]+image_x >= len(tile.pixels[0]):
+				return False
+			image_char = image_row[image_x]
+			if image_char == ' ':
+				# Char matches anything
+				continue
+			if image_char != tile.pixels[corner_coord[1]+image_y][corner_coord[0]+image_x]:
+				return False
+	return True
+
+def tile_apply_image(tile, image, corner_coord):
+	tile = copy.deepcopy(tile)
+	image_array = []
+	lines = image.splitlines()
+	for line in lines:
+		image_array.append(list(line)) 
+	for image_y in range(0, len(image_array)):
+		image_row = image_array[image_y]
+		for image_x in range(0, len(image_row)):
+			image_char = image_row[image_x]
+			if image_char == ' ':
+				continue
+			if image_char == '#':
+				tile.pixels[corner_coord[1]+image_y][corner_coord[0]+image_x] = 'O'
+	return tile
+
+def tile_count_char(tile, char):
+	count = 0
+	for row in tile.pixels:
+		for item in row:
+			if char == item:
+				count += 1
+	return count
+
 def tile_to_string(tile):
 
 	# TODO: Remove debug
@@ -125,7 +192,6 @@ def generate_indexes(tiles):
 
 	return indexes
 
-
 def add_to_edge_index(edge, edge_index, tile_orientation):
 	if edge not in edge_index:
 		edge_index[edge] = set()
@@ -183,10 +249,8 @@ def get_compatible_tiles(target_square, solution_matrix, indexes):
 SolutionMatrix = collections.namedtuple('SolutionMatrix', ['squares'])
 SquareLocation = collections.namedtuple('SquareLocation', ['x', 'y'])
 
-def find_solution(tiles):
-
+def find_assembled_tiles(tiles):
 	indexes = generate_indexes(tiles)
-
 	width = int(math.sqrt(len(tiles)))
 	solution_matrix = [[[]]*width for i in range(width)]
 	# Initialize first square with all possible tile orientations
@@ -212,17 +276,42 @@ def find_solution(tiles):
 				current_square = get_next_square(current_square, solution_matrix, offset=-1)
 				# The top item in this just failed
 				solution_matrix[current_square.y][current_square.x].pop()
-
 		else:
 			current_square = next_square
 
-	# Compute product of tile_ids in corners
-	product = 1
-	for r in [0, len(solution_matrix)-1]:
-		row = solution_matrix[r]
-		for i in [0, len(row)-1]:
-			product *= row[i][-1].tile_id
-	return product
+	# Collect simple matrix of resolved tiles
+	for y in range(0, len(solution_matrix)):
+		row = solution_matrix[y]
+		for x in range(0, len(row)):
+			tile = get_current_tile(SquareLocation(x,y), solution_matrix, indexes)
+			row[x] = tile_shrink(tile)
+	return solution_matrix
+
+def join_tiles(tiles_matrix):
+	tile_height = len(tiles_matrix[0][0].pixels)
+	tile_width = len(tiles_matrix[0][0].pixels[0])
+	height = len(tiles_matrix) * tile_height
+	width = len(tiles_matrix[0]) * tile_width
+	pixels = [[[]]*width for i in range(height)]
+	for tile_y in range(0, len(tiles_matrix)):
+		tile_row = tiles_matrix[tile_y]
+		for tile_x in range(0, len(tile_row)):
+			tile = tile_row[tile_x]
+			for y in range(0, len(tile.pixels)):
+				row = tile.pixels[y]
+				for x in range(0, len(row)):
+					pixels[tile_y*tile_height+y][tile_x*tile_width+x] = row[x]
+	return Tile(tile_id=0, pixels=pixels)
+
+def find_image_in_all_tile_translations(tile, image):
+	result = []
+	for translation in STANDARD_TRANSLATIONS:
+		tx_tile = tile_translate(tile, translation)
+		found = tile_find_image(tx_tile, image)
+		if len(found) < 1:
+			continue
+		result.append((tx_tile, found))
+	return result
 
 def get_current_tile(square, solution_matrix, indexes):
 	'''
