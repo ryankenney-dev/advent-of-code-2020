@@ -28,7 +28,10 @@ def play_round(hands):
 
 	# Launch recursive game
 	if enough_for_recurse:
-		winner = play_whole_game(copy.deepcopy(hands))
+		recurse_hands = []
+		for card, hand in zip(cards, hands):
+			recurse_hands.append(hand[0:card])
+		winner = play_whole_game(recurse_hands)
 
 	# Identify winner by current cards
 	else:
@@ -42,30 +45,58 @@ def play_round(hands):
 	else:
 		raise Exception('Should not happpen')
 
+	# TODO: Remove debug
+	# print('  (end) play_round hands: %s' % hands)
+
+
+# TODO: Make non-global?
+# hand_history = [set(),set()]
+
 # TODO: Remove debug
 game_id = 0
+def get_next_game_id():
+	# TODO: Remove global
+	global game_id
+	game_id += 1
+	return game_id
 
 def play_whole_game(hands):
 
-	# TODO: Remove debug
-	global game_id
-	game_id += 1
-	print('[GAME: %s] play_whole_game hands: %s' % (game_id, hands))
-
+	# TODO: Make non-global?
+	# global hand_history
 	hand_history = [set(),set()]
+
+	# TODO: Remove debug
+	game_id = get_next_game_id()
+	print('[GAME: %s] play_whole_game hands: %s' % (game_id, hands))
+	# if game_id > 2:
+	# 	raise Exception('Hold up')
+
 	# While no hand empty...
 	while all(list(map(lambda h: len(h) > 0, hands))):
 		# If any hand has been played before,
 		# by the same player, player 1 wins
 		for hand, history in zip(hands, hand_history):
 			if hand_to_string(hand) in history:
+
+				# TODO: Remove debug
+				print('[END GAME: %s] HAND SEEN BEFORE' % game_id)
+
 				return 0
 			history.add(hand_to_string(hand))
 		play_round(hands)
 
+		# TODO: Remove debug
+		# print('  (before while) [%s] play_round:  %s' % (all(list(map(lambda h: len(h) > 0, hands))), hands))
+
+
 	scores = []
 	for hand in hands:
 		scores.append(compute_score(hand))
+
+	# TODO: Remove debug
+	print('[END GAME: %s]' % game_id)
+
 	return scores.index(max(scores))
 
 def compute_score(hand):
@@ -73,10 +104,14 @@ def compute_score(hand):
 	for i in range(0, len(hand)):
 
 		# TODO: Remove debug
-		print('hand: %s' % hand)
-		print('%s * %s = %s' % ((i+1), hand[len(hand)-i-1], (i+1) * hand[len(hand)-i-1]))
+		# print('hand: %s' % hand)
+		# print('%s * %s = %s' % ((i+1), hand[len(hand)-i-1], (i+1) * hand[len(hand)-i-1]))
 
 		score += (i+1) * hand[len(hand)-i-1]
+
+	# TODO: Remove debug
+	print('score: %s' % score)
+
 	return score
 
 def hand_to_string(hand):
