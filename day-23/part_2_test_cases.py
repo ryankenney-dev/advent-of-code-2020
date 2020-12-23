@@ -1,28 +1,22 @@
 import part_2
-import copy
+import json
 
 test_cases = [{
     'input': '389125467',
-    'expected_rounds': [
-        [2, 8, 9, 1, 5, 4, 6, 7, 3],
-        [5, 4, 6, 7, 8, 9, 1, 3, 2],
-        [8, 9, 1, 3, 4, 6, 7, 2, 5],
-        [4, 6, 7, 9, 1, 3, 2, 5, 8],
-        [1, 3, 6, 7, 9, 2, 5, 8, 4],
-        [9, 3, 6, 7, 2, 5, 8, 4, 1],
-        [2, 5, 8, 3, 6, 7, 4, 1, 9],
-        [6, 7, 4, 1, 5, 8, 3, 9, 2],
-        [5, 7, 4, 1, 8, 3, 9, 2, 6],
-        [8, 3, 7, 4, 1, 9, 2, 6, 5],
-    ],
-    'expected_signaures': {
-        0: '54673289',
-        1: '32546789',
-        2: '34672589',
-        3: '32584679',
-        9: '92658374',
-        99: '67384529',
-    }
+    'expected_rounds': {
+        0: [2, 8, 9, 1, 5, 4, 6, 7, 3],
+        1: [5, 4, 6, 7, 8, 9, 1, 3, 2],
+        2: [8, 9, 1, 3, 4, 6, 7, 2, 5],
+        3: [4, 6, 7, 9, 1, 3, 2, 5, 8],
+        4: [1, 3, 6, 7, 9, 2, 5, 8, 4],
+        5: [9, 3, 6, 7, 2, 5, 8, 4, 1],
+        6: [2, 5, 8, 3, 6, 7, 4, 1, 9],
+        7: [6, 7, 4, 1, 5, 8, 3, 9, 2],
+        8: [5, 7, 4, 1, 8, 3, 9, 2, 6],
+        9: [8, 3, 7, 4, 1, 9, 2, 6, 5],
+    },
+    'expectd_product_after_10': 18,
+    'expectd_product_after_10m': 149245887792
 }]
 
 def assert_equals(actual_value, expected_value):
@@ -31,17 +25,23 @@ def assert_equals(actual_value, expected_value):
 
 for test_case in test_cases:
 
-    cups = part_2.parse_input(test_case['input'])
-    for expected_cups in test_case['expected_rounds']:
-        cups = part_2.run_cycle(cups)
-        assert_equals(cups, expected_cups)
+    game = part_2.Game(test_case['input'], 9)
+    for i in range(0, 10):
+        print(game.to_label_list())
+        game.run_cycle()
+        if i not in test_case['expected_rounds']:
+            continue
+        assert_equals( \
+            game.to_label_list(), \
+            test_case['expected_rounds'][i])
+    product = game.set_product_of_two_labels_after_1()
+    assert_equals(product, test_case['expectd_product_after_10'])
 
-    cups = part_2.parse_input(test_case['input'])
-    for i in range(0, 105):
-        cups = part_2.run_cycle(cups)
-        if i in test_case['expected_signaures']:
-            assert_equals(part_2.get_cycle_signature(cups),
-                test_case['expected_signaures'][i])
+    game = part_2.Game(test_case['input'], 1000000)
+    for i in range(0, 10000000):
+        game.run_cycle()
+    product = game.set_product_of_two_labels_after_1()
+    assert_equals(product, test_case['expectd_product_after_10m'])
 
 print("")
 print("[[[ SUCCESS ]]]")

@@ -4,10 +4,10 @@ import sys
 with open(sys.argv[1], 'r') as f:
     message = f.read()
 
-cups = part_2.parse_input(message)
-for i in range(0, 100):
-	cups = part_2.run_cycle(cups)
-result = part_2.get_cycle_signature(cups)
+game = part_2.Game(message, 1000000)
+for i in range(0, 10000000):
+	game.run_cycle()
+result = game.set_product_of_two_labels_after_1()
 
 print("")
 print("[[[ Result: %s ]]]" % result)
