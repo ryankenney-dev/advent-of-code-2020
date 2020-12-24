@@ -44,7 +44,28 @@ wseweeenwnesenwwwswnew''',
         ['ne', 'sw', 'nw', 'e', 'w', 'nw', 'nw', 'se', 'e', 'nw', 'se', 'e', 'se', 'w', 'se', 'nw', 'sw', 'e', 'e', 'w', 'e'],
         ['w', 'se', 'w', 'e', 'e', 'e', 'nw', 'ne', 'se', 'nw', 'w', 'w', 'sw', 'ne', 'w']
     ],
-    'expected_black_tile_count': 10
+    'expected_black_tile_counts': {
+        0: 10,
+        1: 15,
+        2: 12,
+        3: 25,
+        4: 14,
+        5: 23,
+        6: 28,
+        7: 41,
+        8: 37,
+        9: 49,
+        10: 37,
+        20: 132,
+        30: 259,
+        40: 406,
+        50: 566,
+        60: 788,
+        70: 1106,
+        80: 1373,
+        90: 1844,
+        100: 2208,
+    }
 }]
 
 def assert_equals(actual_value, expected_value):
@@ -57,7 +78,20 @@ for test_case in test_cases:
     assert_equals(tile_paths, test_case['exepected_tile_paths'])
     tile_states = part_2.flip_all_paths(tile_paths)
     black_tile_count = part_2.count_black_tiles(tile_states)
-    assert_equals(black_tile_count, test_case['expected_black_tile_count'])
+    assert_equals(black_tile_count, test_case['expected_black_tile_counts'][0])
+
+    print(part_2.state_to_string(tile_states), '\n========')
+
+    for i in range(1, 101):
+        part_2.run_cycle(tile_states)
+
+        print(part_2.state_to_string(tile_states), '\n========')
+
+        if i in test_case['expected_black_tile_counts']:
+            black_tile_count = part_2.count_black_tiles(tile_states)
+            assert_equals(black_tile_count, test_case['expected_black_tile_counts'][i])
+
+
 
 print("")
 print("[[[ SUCCESS ]]]")
